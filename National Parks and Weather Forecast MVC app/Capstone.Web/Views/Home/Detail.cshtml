@@ -1,0 +1,231 @@
+﻿
+@using Capstone.Web.Models
+
+@model ParkDetailViewModel
+
+@{
+    string jpeg = ".jpg";
+    string png = ".png";
+    string temptype = (string)Session["temp"];
+}
+
+<style>
+    h4 {
+        font-weight: bold;
+        text-align: center;
+    }
+</style>
+<div class="media">
+    <div class="media-left media-middle">
+        <img src="~/Content/img/parks/@Model.ParkCode@jpeg" class="media-object img-fluid" style="padding:8px" />
+    </div>
+    <div class="media-body media-middle">
+        <h2 style="font-weight:bold" class="media-heading">@Model.ParkName, @Model.State</h2>
+        <h3 style="color:darkslategrey">@Model.ParkDescription</h3>
+        <br>
+        <h3>
+            "@Model.InspirationalQuote"
+        </h3>
+        <i>
+            - @Model.InspirationalQuoteSource
+        </i>
+    </div>
+    <br>
+</div>
+<div class="row" style="background-color: darkseagreen">
+    <div class="col-sm-2">
+        <h4>
+            Entry Fee:
+            $@Model.EntryFee
+        </h4>
+    </div>
+    <div class="col-sm-2">
+        <h4>
+            Elevation:
+            @Model.ElevationInFeet feet
+        </h4>
+    </div>
+    <div class="col-sm-2">
+        <h4>
+            Total Trail Distance Combined:
+            @Model.MilesOfTrail miles
+        </h4>
+    </div>
+    <div class="col-sm-2">
+        <h4>
+            Total Campsites:
+            @Model.NumberOfCampsites
+        </h4>
+    </div>
+    <div class="col-sm-2">
+        <h4>
+            Climate:
+            @Model.Climate
+        </h4>
+    </div>
+    <div class="col-sm-2">  </div>
+</div>
+<div class="row" style="background-color: darkseagreen">
+    <div class="col-sm-2">
+        <h4>
+            Year Founded:
+            @Model.YearFounded
+        </h4>
+    </div>
+    <div class="col-sm-2">
+        <h4>
+            Annual Visitors:
+            @Model.AnnualVisitorCount
+        </h4>
+    </div>
+    <div class="col-sm-2">
+        <h4>
+            Acreage:
+            @Model.Acreage sq. feet
+        </h4>
+    </div>
+    <div class="col-sm-2">
+        <h4>
+            Unique Animal Species count:
+            @Model.NumberOfAnimalSpecies
+        </h4>
+    </div>    <div class="col-sm-2">  </div>    <div class="col-sm-2">  </div>
+</div>
+<br>
+<div class="row">
+    <div>
+        <h2>
+            Five Day Forecast:
+            @*<input type="checkbox" checked data-toggle="toggle" id="scale" name="scale" value="true" data-on="°F" data-off="°C" data-onstyle="success" data-offstyle="info"><input name="scale" type="hidden" value="false" />*@
+
+
+            @using (Html.BeginForm("Detail", "Home"))
+            {
+                if (Convert.ToBoolean(Session["button"]) == true)
+                {
+                    <input type="checkbox" checked data-toggle="toggle" id="scale" name="scale" value="true" data-on="°F" data-off="°C" data-onstyle="success" data-offstyle="info"><input name="scale" type="hidden" value="false" />
+                }
+                else
+                {
+                    <input type="checkbox" data-toggle="toggle" id="scale" name="scale" value="true" data-on="°F" data-off="°C" data-onstyle="success" data-offstyle="info"><input name="scale" type="hidden" value="false" />
+                }
+
+                @*<div class="custom-checkbox"><label style="font-size:small">@Html.CheckBox("scale", temptype) Checked for Fahrenheit</label> </div>*@
+
+                <input type="hidden" id="parkCode" name="parkCode" value="@Model.ParkCode" />
+                <button class="btn btn-primary">Switch!</button>
+
+            }
+
+        </h2>
+
+    </div>
+
+
+</div>
+<div class="row">
+    @for (int i = 0; i < Model.Forecast.Count; i++)
+    {
+        <div class="col-sm-2">
+            <img src="~/Content/img/weather/@Model.Forecast[i].GetImgName()@png" class="image img-thumbnail">
+            <div class="overlay">
+                <div class="text" style="font-size:medium">@Model.Forecast[i].GetWeatherMessage()</div>
+            </div>
+        </div>
+    }
+</div>
+<div class="row">
+    @for (int i = 0; i < Model.Forecast.Count; i++)
+    {
+        <div class="col-sm-2">
+            @if (Model.Forecast[i].GetUniqueTempNotification().Contains(Weather.FreezeWarning))
+            {
+                <p>@Weather.FreezeWarning</p>
+            }
+            @if (Model.Forecast[i].GetUniqueTempNotification().Contains(Weather.HeatWarning))
+            {
+                <p>@Weather.HeatWarning</p>
+            }
+            @if (Model.Forecast[i].GetUniqueTempNotification().Contains(Weather.TempSwing))
+            {
+                <p>@Weather.TempSwing</p>
+            }
+        </div>
+    }
+</div>
+<div class="row">
+    <div class="col-sm-2">
+        <h4>
+            Today's Weather:
+            @Model.Forecast[0].Forecast
+        </h4>
+    </div>
+    <div class="col-sm-2">
+        <h4>
+            Tomorrow:
+            @Model.Forecast[1].Forecast
+        </h4>
+    </div>
+    @for (int i = 3; i <= Model.Forecast.Count; i++)
+    {
+        <div class="col-sm-2">
+            <h4>
+                Day @i -
+            </h4><h4>
+                @Model.Forecast[i - 1].Forecast
+            </h4>
+        </div>
+    }
+</div>
+<div class="row">
+    <div class="col-sm-2">
+        <h4>
+            High Today:
+            @Model.Forecast[0].GetPreferredHighTemp()
+        </h4>
+    </div>
+    <div class="col-sm-2">
+        <h4>
+            Tomorrow's High:
+            @Model.Forecast[1].GetPreferredLowTemp()
+        </h4>
+    </div>
+    @for (int i = 3; i <= Model.Forecast.Count; i++)
+    {
+        <div class="col-sm-2">
+            <h4>
+                High:
+                @Model.Forecast[i - 1].GetPreferredHighTemp()
+            </h4>
+        </div>
+    }
+</div>
+
+<div class="row">
+    <div class="col-sm-2">
+        <h4>
+            Low Today:
+            @Model.Forecast[0].GetPreferredLowTemp()
+
+        </h4>
+    </div>
+    <div class="col-sm-2">
+        <h4>
+            Tomorrow's Low:
+            @Model.Forecast[1].GetPreferredLowTemp()
+        </h4>
+    </div>
+    @for (int i = 3; i <= Model.Forecast.Count; i++)
+    {
+        <div class="col-sm-2">
+            <h4>
+                Low:
+                @Model.Forecast[i - 1].GetPreferredLowTemp()
+            </h4>
+        </div>
+    }
+</div>
+
+
+
+

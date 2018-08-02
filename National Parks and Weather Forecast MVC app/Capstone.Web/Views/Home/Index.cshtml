@@ -1,0 +1,25 @@
+﻿@using Capstone.Web.Models
+
+@model List<Park>
+@{
+    string jpeg = ".jpg";
+}
+
+<h1 style="text-align:center; color:darkolivegreen">Welcome to the National Park Database &amp; Survey Site!</h1><br>
+
+@foreach (var item in Model)
+{
+    <a href="~/Home/Detail?ParkCode=@(item.ParkCode)">
+        <div class="media">
+            <div class="media-left media-middle">
+                <img src="~/Content/img/parks/@item.ParkCode@jpeg" class="media-object img-fluid" />
+            </div>
+
+            <div class="media-body">
+                <h2 class="media-heading">@item.ParkName, @item.State</h2>
+                <h4>@item.ParkDescription</h4>
+            </div>
+        </div>
+    </a>
+<hr>
+}
